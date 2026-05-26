@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In – StreamFlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #e50914;
+      --red-dark: #b81d24;
+      --text: #fff;
+      --text-muted: #b3b3b3;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600&q=60');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.25);
+      z-index: 0;
+    }
+
+    nav {
+      position: relative;
+      z-index: 10;
+      padding: 1.5rem 4%;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: var(--red);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+
+    .signin-wrap {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .signin-box {
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 8px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 450px;
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      padding: 1.4rem 1rem 0.6rem;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: background 0.2s;
+    }
+    .form-group input:focus { background: #454545; }
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+      transform: translateY(-10px) scale(0.75);
+      color: var(--text-muted);
+    }
+
+    .form-group label {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8c8c8c;
+      font-size: 1rem;
+      pointer-events: none;
+      transform-origin: left top;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .form-group .toggle-pass {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .error-msg {
+      background: #e87c03;
+      color: #fff;
+      border-radius: 4px;
+      padding: 0.8rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: background 0.2s, transform 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-submit:hover { background: var(--red-dark); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: #5c0a0e; cursor: not-allowed; }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.5rem 0;
+    }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #404040;
+    }
+    .or-divider span { color: var(--text-muted); font-size: 0.85rem; }
+
+    .btn-code {
+      width: 100%;
+      background: #404040;
+      color: var(--text);
+      border: none;
+      border-radius: 4px;
+      padding: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-code:hover { background: #555; }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+    }
+    .remember-row label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .remember-row input[type=checkbox] { accent-color: var(--red); }
+    .remember-row a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .remember-row a:hover { text-decoration: underline; }
+
+    .signup-prompt {
+      margin-top: 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .signup-prompt a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .signup-prompt a:hover { text-decoration: underline; }
+
+    .recaptcha-note {
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      color: #737373;
+      line-height: 1.5;
+    }
+    .recaptcha-note a { color: #0071eb; text-decoration: none; }
+
+    /* ── FOOTER ── */
+    .signin-footer {
+      position: relative;
+      z-index: 10;
+      padding: 2rem 4%;
+      background: rgba(0,0,0,0.7);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .signin-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .signin-footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .signin-footer-links a:hover { text-decoration: underline; }
+
+    /* Loading spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    .loading .spinner { display: block; }
+    .loading .btn-text { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="bg-image"></div>
+
+<nav>
+  <a href="index.html" class="logo">StreamFlix</a>
+</nav>
+
+<div class="signin-wrap">
+  <div class="signin-box">
+    <h1>Sign In</h1>
+
+    <div class="error-msg" id="error-msg">
+      Sorry, we can't find an account with this email address. Please try again or create a new account.
+    </div>
+
+    <form id="signin-form" onsubmit="handleSubmit(event)" novalidate>
+      <div class="form-group">
+        <input type="email" id="email" placeholder=" " autocomplete="email" required/>
+        <label for="email">Email or mobile number</label>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" placeholder=" " autocomplete="current-password" required/>
+        <label for="password">Password</label>
+        <button type="button" class="toggle-pass" onclick="togglePassword()">SHOW</button>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submit-btn">
+        <span class="btn-text">Sign In</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="or-divider"><span>OR</span></div>
+    <button class="btn-code" onclick="showSignup()">Use a Sign-In Code</button>
+
+    <div class="remember-row">
+      <label>
+        <input type="checkbox" checked/>
+        Remember me
+      </label>
+      <a href="#">Need help?</a>
+    </div>
+
+    <div class="signup-prompt">
+      New to StreamFlix? <a href="#">Sign up now</a>
+    </div>
+
+    <p class="recaptcha-note">
+      This page is protected by Google reCAPTCHA to ensure you're not a bot.
+      <a href="#">Learn more.</a>
+    </p>
+  </div>
+</div>
+
+<div class="signin-footer">
+  <div class="signin-footer-links">
+    <a href="#">FAQ</a>
+    <a href="#">Help Center</a>
+    <a href="#">Terms of Use</a>
+    <a href="#">Privacy</a>
+    <a href="#">Cookie Preferences</a>
+    <a href="#">Corporate Information</a>
+  </div>
+  <span>StreamFlix · Portfolio Project</span>
+</div>
+
+<script>
+  function togglePassword() {
+    const input = document.getElementById('password');
+    const btn = document.querySelector('.toggle-pass');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'HIDE';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'SHOW';
+    }
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    errorMsg.classList.remove('show');
+
+    if (!email || !password) {
+      errorMsg.textContent = 'Please enter your email and password.';
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    // Simulate loading
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      // Demo: any credentials with @ work
+      if (email.includes('@') && password.length >= 4) {
+        window.location.href = 'index.html';
+      } else {
+        errorMsg.textContent = 'Incorrect password. Please try again or you can reset your password.';
+        errorMsg.classList.add('show');
+      }
+    }, 1500);
+  }
+
+  function showSignup() {
+    alert('Sign-In Code feature coming soon!\n\nFor demo purposes, enter any email with @ and any 4+ character password.');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse – StreamFlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --red: #e50914;
+      --red-dark: #b81d24;
+      --black: #000;
+      --dark: #141414;
+      --card-bg: #1c1c1c;
+      --text: #fff;
+      --text-muted: #b3b3b3;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 4%;
+      border-bottom: 1px solid #222;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      color: var(--red);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .btn-signin {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* ── HEADER ── */
+    .page-header {
+      padding: 2.5rem 4% 1rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+    }
+    .page-subtitle { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex;
+      gap: 0.8rem;
+      padding: 0 4% 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      border-bottom: 1px solid #222;
+      margin-bottom: 1.5rem;
+    }
+    .filter-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-right: 0.2rem;
+    }
+    select, .sort-select {
+      background: #222;
+      color: var(--text);
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+    }
+    select:hover { border-color: #555; }
+
+    .genre-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .gpill {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text-muted);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gpill:hover, .gpill.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* ── GRID ── */
+    .grid-container { padding: 0 4% 4rem; }
+    .results-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+    .results-count strong { color: var(--text); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 8px;
+    }
+
+    .movie-card {
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      background: var(--card-bg);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .movie-card:hover {
+      transform: scale(1.04);
+      z-index: 5;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+    }
+    .movie-card img {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+    }
+    .movie-info {
+      padding: 8px 10px 10px;
+    }
+    .movie-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .movie-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .movie-match { color: #46d369; font-weight: 600; }
+    .movie-genre {
+      background: rgba(255,255,255,0.08);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .movie-ribbon {
+      position: absolute;
+      top: 8px; left: 8px;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    /* ── LOAD MORE ── */
+    .load-more-wrap {
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .btn-load {
+      background: transparent;
+      border: 1.5px solid var(--text-muted);
+      color: var(--text);
+      padding: 0.7rem 2.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-load:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: #fff;
+    }
+
+    /* ── SKELETON ── */
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #222 25%, #2a2a2a 50%, #222 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+      aspect-ratio: 2/3;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">StreamFlix</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="browse.html" class="active">Movies</a></li>
+    <li><a href="browse.html">TV Shows</a></li>
+    <li><a href="browse.html">New &amp; Popular</a></li>
+    <li><a href="#">My List</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="signin.html" class="btn-signin">Sign In</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Browse All</h1>
+    <p class="page-subtitle">Discover your next favorite movie or show</p>
+  </div>
+  <div style="display:flex; gap:0.8rem; align-items:center;">
+    <span class="filter-label">Sort by:</span>
+    <select class="sort-select" onchange="sortGrid(this.value)">
+      <option value="match">Best Match</option>
+      <option value="year">Year</option>
+      <option value="rating">Rating</option>
+      <option value="az">A–Z</option>
+    </select>
+  </div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">Filter:</span>
+  <select onchange="filterType(this.value)">
+    <option value="all">All Types</option>
+    <option value="movie">Movies</option>
+    <option value="series">TV Series</option>
+    <option value="documentary">Documentary</option>
+  </select>
+
+  <select onchange="filterYear(this.value)">
+    <option value="all">All Years</option>
+    <option value="2024">2024</option>
+    <option value="2023">2023</option>
+    <option value="2022">2022</option>
+    <option value="2021">2021</option>
+    <option value="older">Before 2021</option>
+  </select>
+
+  <div class="genre-pills" id="genre-pills">
+    <span class="gpill active" onclick="filterGenre('All', this)">All</span>
+    <span class="gpill" onclick="filterGenre('Action', this)">Action</span>
+    <span class="gpill" onclick="filterGenre('Comedy', this)">Comedy</span>
+    <span class="gpill" onclick="filterGenre('Drama', this)">Drama</span>
+    <span class="gpill" onclick="filterGenre('Sci-Fi', this)">Sci-Fi</span>
+    <span class="gpill" onclick="filterGenre('Horror', this)">Horror</span>
+    <span class="gpill" onclick="filterGenre('Romance', this)">Romance</span>
+    <span class="gpill" onclick="filterGenre('Thriller', this)">Thriller</span>
+    <span class="gpill" onclick="filterGenre('Documentary', this)">Documentary</span>
+    <span class="gpill" onclick="filterGenre('Anime', this)">Anime</span>
+  </div>
+</div>
+
+<div class="grid-container">
+  <div class="results-count" id="count">Showing <strong>48</strong> titles</div>
+  <div class="grid" id="grid"></div>
+  <div class="load-more-wrap">
+    <button class="btn-load" onclick="loadMore()">Load More</button>
+  </div>
+</div>
+
+<script>
+const allMovies = [
+  { title:"Oppenheimer", year:2023, genre:"Drama", match:98, type:"movie", img:"https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=300&q=70", ribbon:"New" },
+  { title:"The Batman", year:2022, genre:"Action", match:95, type:"movie", img:"https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=300&q=70", ribbon:null },
+  { title:"Dune Part 2", year:2024, genre:"Sci-Fi", match:96, type:"movie", img:"https://images.unsplash.com/photo-1464802686167-b939a6910659?w=300&q=70", ribbon:"New" },
+  { title:"Parasite", year:2019, genre:"Thriller", match:97, type:"movie", img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=70", ribbon:null },
+  { title:"1917", year:2019, genre:"Drama", match:90, type:"movie", img:"https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=300&q=70", ribbon:null },
+  { title:"Severance", year:2022, genre:"Thriller", match:93, type:"series", img:"https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=300&q=70", ribbon:"Series" },
+  { title:"Interstellar", year:2014, genre:"Sci-Fi", match:99, type:"movie", img:"https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=300&q=70", ribbon:null },
+  { title:"The Crown", year:2022, genre:"Drama", match:88, type:"series", img:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&q=70", ribbon:"Series" },
+  { title:"Get Out", year:2017, genre:"Horror", match:92, type:"movie", img:"https://images.unsplash.com/photo-1503095396549-807759245b35?w=300&q=70", ribbon:null },
+  { title:"Breaking Bad", year:2013, genre:"Thriller", match:99, type:"series", img:"https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=300&q=70", ribbon:"Series" },
+  { title:"Everything Everywhere", year:2022, genre:"Sci-Fi", match:96, type:"movie", img:"https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&q=70", ribbon:null },
+  { title:"Tár", year:2022, genre:"Drama", match:89, type:"movie", img:"https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=300&q=70", ribbon:null },
+  { title:"John Wick 4", year:2023, genre:"Action", match:91, type:"movie", img:"https://images.unsplash.com/photo-1545486332-9e0999c535b2?w=300&q=70", ribbon:null },
+  { title:"Past Lives", year:2023, genre:"Romance", match:94, type:"movie", img:"https://images.unsplash.com/photo-1512438248247-f0f2a5a8b7f0?w=300&q=70", ribbon:"New" },
+  { title:"Saltburn", year:2023, genre:"Thriller", match:88, type:"movie", img:"https://images.unsplash.com/photo-1605106702734-205df224ecce?w=300&q=70", ribbon:null },
+  { title:"Stranger Things", year:2022, genre:"Sci-Fi", match:95, type:"series", img:"https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=300&q=70", ribbon:"Series" },
+  { title:"The Bear", year:2023, genre:"Drama", match:93, type:"series", img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&q=70", ribbon:"New" },
+  { title:"Wednesday", year:2022, genre:"Comedy", match:87, type:"series", img:"https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300&q=70", ribbon:"Series" },
+  { title:"Cocaine Bear", year:2023, genre:"Action", match:80, type:"movie", img:"https://images.unsplash.com/photo-1608848461950-0fe51dfc41cb?w=300&q=70", ribbon:null },
+  { title:"The Last of Us", year:2023, genre:"Drama", match:98, type:"series", img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=70", ribbon:"Series" },
+  { title:"Shutter Island", year:2010, genre:"Thriller", match:91, type:"movie", img:"https://images.unsplash.com/photo-1435224654926-ecc9f7fa028c?w=300&q=70", ribbon:null },
+  { title:"Midsommar", year:2019, genre:"Horror", match:86, type:"movie", img:"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=300&q=70", ribbon:null },
+  { title:"Arrival", year:2016, genre:"Sci-Fi", match:94, type:"movie", img:"https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=300&q=70", ribbon:null },
+  { title:"Klaus", year:2019, genre:"Comedy", match:90, type:"movie", img:"https://images.unsplash.com/photo-1607827448299-a099b845f076?w=300&q=70", ribbon:null },
+  { title:"Black Mirror", year:2023, genre:"Sci-Fi", match:88, type:"series", img:"https://images.unsplash.com/photo-1510511233900-1982d92bd835?w=300&q=70", ribbon:"Series" },
+  { title:"Guillermo del Toro: Pinocchio", year:2022, genre:"Comedy", match:91, type:"movie", img:"https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?w=300&q=70", ribbon:null },
+  { title:"Free Solo", year:2018, genre:"Documentary", match:95, type:"documentary", img:"https://images.unsplash.com/photo-1522163182402-834f871fd851?w=300&q=70", ribbon:"Doc" },
+  { title:"Stutz", year:2022, genre:"Documentary", match:87, type:"documentary", img:"https://images.unsplash.com/photo-1455849318743-b2233052fcff?w=300&q=70", ribbon:"Doc" },
+  { title:"Nightmare Alley", year:2021, genre:"Thriller", match:83, type:"movie", img:"https://images.unsplash.com/photo-1503095396549-807759245b35?w=300&q=70", ribbon:null },
+  { title:"Don't Look Up", year:2021, genre:"Comedy", match:84, type:"movie", img:"https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&q=70", ribbon:null },
+  { title:"Kimi", year:2022, genre:"Thriller", match:82, type:"movie", img:"https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=300&q=70", ribbon:null },
+  { title:"Jujutsu Kaisen", year:2023, genre:"Anime", match:95, type:"series", img:"https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=300&q=70", ribbon:"Anime" },
+  { title:"Demon Slayer", year:2023, genre:"Anime", match:94, type:"series", img:"https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=300&q=70", ribbon:"Anime" },
+  { title:"Attack on Titan", year:2023, genre:"Anime", match:98, type:"series", img:"https://images.unsplash.com/photo-1607827448299-a099b845f076?w=300&q=70", ribbon:"Anime" },
+  { title:"The Power of the Dog", year:2021, genre:"Drama", match:85, type:"movie", img:"https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=300&q=70", ribbon:null },
+  { title:"Spencer", year:2021, genre:"Drama", match:81, type:"movie", img:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&q=70", ribbon:null },
+  { title:"Nope", year:2022, genre:"Horror", match:85, type:"movie", img:"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=300&q=70", ribbon:null },
+  { title:"Bullet Train", year:2022, genre:"Action", match:83, type:"movie", img:"https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=300&q=70", ribbon:null },
+  { title:"Tar (2022)", year:2022, genre:"Drama", match:87, type:"movie", img:"https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=300&q=70", ribbon:null },
+  { title:"The Menu", year:2022, genre:"Thriller", match:86, type:"movie", img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&q=70", ribbon:null },
+  { title:"Smile", year:2022, genre:"Horror", match:79, type:"movie", img:"https://images.unsplash.com/photo-1503095396549-807759245b35?w=300&q=70", ribbon:null },
+  { title:"Glass Onion", year:2022, genre:"Comedy", match:88, type:"movie", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=70", ribbon:null },
+  { title:"Avatar 2", year:2022, genre:"Sci-Fi", match:84, type:"movie", img:"https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=300&q=70", ribbon:null },
+  { title:"Top Gun: Maverick", year:2022, genre:"Action", match:93, type:"movie", img:"https://images.unsplash.com/photo-1464802686167-b939a6910659?w=300&q=70", ribbon:null },
+  { title:"The Fabelmans", year:2022, genre:"Drama", match:88, type:"movie", img:"https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=300&q=70", ribbon:null },
+  { title:"Hustle", year:2022, genre:"Drama", match:86, type:"movie", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=70", ribbon:null },
+  { title:"The Gray Man", year:2022, genre:"Action", match:80, type:"movie", img:"https://images.unsplash.com/photo-1545486332-9e0999c535b2?w=300&q=70", ribbon:null },
+  { title:"Pinocchio", year:2022, genre:"Comedy", match:75, type:"movie", img:"https://images.unsplash.com/photo-1607827448299-a099b845f076?w=300&q=70", ribbon:null },
+];
+
+let displayed = allMovies;
+let page = 1;
+const perPage = 24;
+
+function renderGrid(data) {
+  const grid = document.getElementById('grid');
+  document.getElementById('count').innerHTML = `Showing <strong>${data.length}</strong> titles`;
+  const slice = data.slice(0, page * perPage);
+  grid.innerHTML = slice.map(m => `
+    <div class="movie-card" onclick="location.href='player.html'" title="${m.title}">
+      ${m.ribbon ? `<div class="movie-ribbon">${m.ribbon}</div>` : ''}
+      <img src="${m.img}" alt="${m.title}" loading="lazy"/>
+      <div class="movie-info">
+        <div class="movie-title">${m.title}</div>
+        <div class="movie-meta">
+          <span class="movie-match">${m.match}%</span>
+          <span>${m.year}</span>
+          <span class="movie-genre">${m.genre}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterGenre(genre, el) {
+  document.querySelectorAll('.gpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  displayed = genre === 'All' ? allMovies : allMovies.filter(m => m.genre === genre);
+  page = 1;
+  renderGrid(displayed);
+}
+
+function filterType(val) {
+  displayed = val === 'all' ? allMovies : allMovies.filter(m => m.type === val);
+  page = 1;
+  renderGrid(displayed);
+}
+
+function filterYear(val) {
+  displayed = val === 'all' ? allMovies :
+    val === 'older' ? allMovies.filter(m => m.year < 2021) :
+    allMovies.filter(m => m.year === parseInt(val));
+  page = 1;
+  renderGrid(displayed);
+}
+
+function sortGrid(val) {
+  const sorted = [...displayed].sort((a,b) => {
+    if (val === 'match') return b.match - a.match;
+    if (val === 'year') return b.year - a.year;
+    if (val === 'rating') return b.match - a.match;
+    if (val === 'az') return a.title.localeCompare(b.title);
+    return 0;
+  });
+  displayed = sorted;
+  renderGrid(displayed);
+}
+
+function loadMore() {
+  page++;
+  renderGrid(displayed);
+}
+
+renderGrid(displayed);
+</script>
+</body>
+</html>
